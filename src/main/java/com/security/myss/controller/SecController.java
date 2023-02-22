@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class SecController {
     @GetMapping("/")
     public String index(){
-
         return "home";
     }
 
