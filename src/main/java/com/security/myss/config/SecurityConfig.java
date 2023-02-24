@@ -16,16 +16,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistration.ProviderDetails.UserInfoEndpoint;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 
 import com.security.myss.config.handler.MyLoginSuccessHandler;
+import com.security.myss.service.PrincipalOauth2UserService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    private PrincipalOauth2UserService principalOauth2UserService;
+
     private static final String[] AUTH_WHITELIST = {
-        "/", "/login", "/logout", "/signup", "/home"
+        "/", "/login", "/logout", "/signup", "/home","/oauth2/authorization/google"
     };
     private static final String[] AUTH_USER_LIST = {
         "/user"
@@ -57,22 +62,28 @@ public class SecurityConfig {
         http.csrf().disable()
             .authorizeHttpRequests(authorize -> authorize
                 // .anyRequest().permitAll()
-                .requestMatchers(AUTH_WHITELIST).permitAll()
+                // .requestMatchers(AUTH_WHITELIST).permitAll()
                 .requestMatchers(AUTH_USER_LIST).access(userAuth)
                 .requestMatchers(AUTH_MANAGER_LIST).access(managerAuth)
                 .requestMatchers(AUTH_ADMIN_LIST).access(adminAuth)
+                .anyRequest().permitAll()
             )
-            .formLogin();
-            // .formLogin(form->form
-            //     .loginPage("/login")
-            //     .defaultSuccessUrl("/")
-            //     .failureUrl("/login")
-            //     .usernameParameter("userId")
-            //     .passwordParameter("passwd")
-            //     // .loginProcessingUrl("/login_proc")
-            //     // .successHandler(new MyLoginSuccessHandler())
-            //     // .failureHandler(null)
-            // )
+            // .formLogin();
+            .formLogin(form->form
+                .loginPage("/login")
+                .defaultSuccessUrl("/")
+                .failureUrl("/login")
+                // .usernameParameter("userId")
+                // .passwordParameter("passwd")
+                // .loginProcessingUrl("/login_proc")
+                // .successHandler(new MyLoginSuccessHandler())
+                // .failureHandler(null)
+            )
+            .oauth2Login(form->form
+                .loginPage("/login")
+                .userInfoEndpoint()
+                .userService(principalOauth2UserService)
+            );
             // .logout(logout->logout
             //     .logoutUrl("/logout")
             //     .logoutSuccessUrl("/login")

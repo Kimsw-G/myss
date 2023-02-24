@@ -1,10 +1,21 @@
 package com.security.myss.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class SecController {
+
+    @ResponseBody
+    @GetMapping("/testlogin")
+    public String testLogin(Authentication authentication){
+        System.err.println(authentication.getPrincipal());
+
+        return "세션 정보 확인";
+    }
+
     @GetMapping("/")
     public String index(){
         return "home";

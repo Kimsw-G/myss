@@ -6,3 +6,16 @@ server:
             charset: UTF-8
             enabled: true
             force: true
+    
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1004392362360-b4bepp13vqhaomhc1jm040ohveuoe6mu.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+            - email
+            - profile
+          
